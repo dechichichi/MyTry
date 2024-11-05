@@ -35,8 +35,7 @@ func RegisterHandlers() {
 			}
 			write(string(msg))
 		default:
-			w.WriteHeader(http.StatusMethodNotAllowed)
-			return
+
 		}
 	})
 }
