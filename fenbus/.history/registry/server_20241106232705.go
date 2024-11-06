@@ -34,16 +34,14 @@ func (r *registry) sendRequiredServices(reg Registration) error {
 	defer r.mutex.Unlock()
 	var p patch
 	for _, s := range r.registrations {
-		for _, r := range reg.RegistryService {
-			if s.Servicename == r {
-				p.Added = append(p.Added, patchEntry{
-					Name: s.Servicename,
-					URL:  s.ServiceURL,
-				})
-			}
+		for _, r := range reg.RegistryServices {
+			p.Added = append(p.Added, patchEntry{
+				Name: s.Servicename,
+				URL:  s.ServiceURL,
+			})
 		}
 	}
-	err := r.sendPatch(p, reg.ServiceUpdateURL)
+	err := r.sendPatch(p, reg.ServiceURL)
 	if err != nil {
 		return err
 	}
@@ -56,11 +54,7 @@ func (r *registry) sendPatch(p patch, url string) error {
 	if err != nil {
 		return err
 	}
-	_, err = http.Post(url, "application/json", bytes.NewBuffer(d))
-	if err != nil {
-		return err
-	}
-	return nil
+	_, err = http.Post(url, "application/json", bytes.NewReader(d))
 }
 
 func (r *registry) remove(url string) error {

@@ -35,7 +35,7 @@ func (r *registry) sendRequiredServices(reg Registration) error {
 	var p patch
 	for _, s := range r.registrations {
 		for _, r := range reg.RegistryService {
-			if s.Servicename == r {
+			if s.Servicename == r.Name {
 				p.Added = append(p.Added, patchEntry{
 					Name: s.Servicename,
 					URL:  s.ServiceURL,
@@ -43,7 +43,7 @@ func (r *registry) sendRequiredServices(reg Registration) error {
 			}
 		}
 	}
-	err := r.sendPatch(p, reg.ServiceUpdateURL)
+	err := r.sendPatch(p, reg.ServiceURL)
 	if err != nil {
 		return err
 	}

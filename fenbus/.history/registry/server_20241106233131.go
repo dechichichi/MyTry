@@ -43,7 +43,7 @@ func (r *registry) sendRequiredServices(reg Registration) error {
 			}
 		}
 	}
-	err := r.sendPatch(p, reg.ServiceUpdateURL)
+	err := r.sendPatch(p, reg.ServiceURL)
 	if err != nil {
 		return err
 	}

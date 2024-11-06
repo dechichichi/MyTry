@@ -1,7 +1,6 @@
 package registry
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -22,45 +21,27 @@ func (r *registry) add(reg Registration) error {
 	r.mutex.Lock()
 	r.registrations = append(r.registrations, reg)
 	r.mutex.Unlock()
-	err := r.sendRequiredServices(reg)
-	if err != nil {
+	err:=r.sendRequiredServices(reg)
+	if err!=nil{
 		return err
 	}
 	return nil
 }
 
 func (r *registry) sendRequiredServices(reg Registration) error {
-	r.mutex.Lock()
-	defer r.mutex.Unlock()
-	var p patch
+     r.mutex.Lock()
+	 defer r.mutex.Unlock()
+    var p patch
 	for _, s := range r.registrations {
-		for _, r := range reg.RegistryService {
-			if s.Servicename == r {
-				p.Added = append(p.Added, patchEntry{
-					Name: s.Servicename,
-					URL:  s.ServiceURL,
-				})
-			}
+        for _,r:=range reg.RegistryServices{
+			p.Added=append(p.Added,patchEntry{
+				Name:s.Servicename,
+				URL:s.ServiceURL,
+				Required:false,
+			})
+			} 
 		}
 	}
-	err := r.sendPatch(p, reg.ServiceUpdateURL)
-	if err != nil {
-		return err
-	}
-	return nil
-
-}
-
-func (r *registry) sendPatch(p patch, url string) error {
-	d, err := json.Marshal(p)
-	if err != nil {
-		return err
-	}
-	_, err = http.Post(url, "application/json", bytes.NewBuffer(d))
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func (r *registry) remove(url string) error {
@@ -77,7 +58,7 @@ func (r *registry) remove(url string) error {
 
 var reg = registry{
 	registrations: make([]Registration, 0),
-	mutex:         new(sync.RWMutex),
+	mutex:         new(sync.Mutex),
 }
 
 type RegistryService struct{}
