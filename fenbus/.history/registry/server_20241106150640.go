@@ -3,7 +3,6 @@ package registry
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"sync"
@@ -60,21 +59,6 @@ func (r RegistryService) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-	case http.MethodDelete:
-		payload, err := ioutil.ReadAll(req.Body)
-		if err != nil {
-			log.Panicln(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		url := string(payload)
-		log.Printf("Removing service with URL %s\n", url)
-		err = reg.remove(url)
-		if err != nil {
-			log.Panicln(err)
-			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 	default:

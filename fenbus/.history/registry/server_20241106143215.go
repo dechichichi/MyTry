@@ -2,14 +2,12 @@ package registry
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"sync"
 )
 
-const ServerPort = ":8080"
+const ServerPort = ":3000"
 const ServiceURL = "http://localhost" + ServerPort + "/services"
 
 type registry struct {
@@ -22,18 +20,6 @@ func (r *registry) add(reg Registration) error {
 	r.registrations = append(r.registrations, reg)
 	r.mutex.Unlock()
 	return nil
-}
-
-func (r *registry) remove(url string) error {
-	for i := range reg.registrations {
-		if reg.registrations[i].ServiceURL == url {
-			r.mutex.Lock()
-			reg.registrations = append(reg.registrations[:i], reg.registrations[:i+1]...)
-			r.mutex.Unlock()
-			return nil
-		}
-	}
-	return fmt.Errorf("Service with URL %s not found", url)
 }
 
 var reg = registry{
@@ -60,21 +46,6 @@ func (r RegistryService) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-	case http.MethodDelete:
-		payload, err := ioutil.ReadAll(req.Body)
-		if err != nil {
-			log.Panicln(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		url := string(payload)
-		log.Printf("Removing service with URL %s\n", url)
-		err = reg.remove(url)
-		if err != nil {
-			log.Panicln(err)
-			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 	default:

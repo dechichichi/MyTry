@@ -66,17 +66,10 @@ func (r RegistryService) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		payload, err := ioutil.ReadAll(req.Body)
 		if err != nil {
 			log.Panicln(err)
-			w.WriteHeader(http.StatusInternalServerError)
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		url := string(payload)
-		log.Printf("Removing service with URL %s\n", url)
-		err = reg.remove(url)
-		if err != nil {
-			log.Panicln(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
+
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
