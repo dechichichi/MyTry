@@ -62,14 +62,5 @@ func test3() {
 		_ = ctx.BindJSON(&student)
 		db.Create(&student)
 	})
-	r.GET("/students/:id", func(ctx *gin.Context) {
-		id := ctx.Param("id")
-		var student dbdata.Student
-		_ = ctx.BindJSON(&student)
-		db.Preload("Courses").Preload("Courses.Teacher").First(&student, id)
-		ctx.JSON(200, gin.H{
-			"student": student,
-		})
-	})
 	r.Run(":8080")
 }

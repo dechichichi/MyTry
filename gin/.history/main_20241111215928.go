@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -57,19 +57,5 @@ func test3() {
 		panic(err)
 	}
 	r := gin.Default()
-	r.POST("/student", func(ctx *gin.Context) {
-		var student dbdata.Student
-		_ = ctx.BindJSON(&student)
-		db.Create(&student)
-	})
-	r.GET("/students/:id", func(ctx *gin.Context) {
-		id := ctx.Param("id")
-		var student dbdata.Student
-		_ = ctx.BindJSON(&student)
-		db.Preload("Courses").Preload("Courses.Teacher").First(&student, id)
-		ctx.JSON(200, gin.H{
-			"student": student,
-		})
-	})
-	r.Run(":8080")
+	r.POST("/student")
 }
